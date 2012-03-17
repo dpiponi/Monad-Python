@@ -76,4 +76,6 @@ source = open(sys.argv[1]).read()
 e = compile(source, "<string>", "exec", PyCF_ONLY_AST)
 e = RewriteComp().visit(e)
 f = compile(e, "<string>", "exec")
+print f
 exec f
+print "Done"
