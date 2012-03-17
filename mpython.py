@@ -3,16 +3,16 @@
 from ast import *
 
 def name(x, ctx):
-  return Name(id=x, ctx = ctx, lineno=0, col_offset=0)
+  return Name(id = x, ctx = ctx, lineno = 0, col_offset = 0)
 
-def call(f, args):
+def call(f, *args):
   f = name(f, Load())
-  return Call(func = f, args=args, lineno=0, col_offset=0, keywords=[], vararg=None)
+  return Call(func = f, args = list(args), lineno = 0, col_offset = 0, keywords = [], vararg = None)
 
 def func(args, body):
-  return Lambda(args = arguments(args = args, defaults = []), body = body, vararg=None, lineno=0, col_offset=0)
+  return Lambda(args = arguments(args = args, defaults = []), body = body, vararg = None, lineno = 0, col_offset = 0)
 
-unit = Tuple(elts = [],lineno=0,col_offset=0,ctx=Load())
+unit = Tuple(elts = [], lineno=0, col_offset = 0, ctx = Load())
 
 def transform(elt, generators):
   if len(generators) ==1:
@@ -21,15 +21,15 @@ def transform(elt, generators):
 
     m = generators[0].iter
     ifs = generators[0].ifs
-    elt = call("singleton", [elt])
+    elt = call("singleton", elt)
     for i in ifs[-1::-1]:
       ifexp = IfExp(i,
-                    call('singleton',[unit]),
-                    call('fail', []), lineno=0, col_offset=0)
+                    call('singleton',unit),
+                    call('fail'), lineno=0, col_offset=0)
       lambdaFunction = func([name('_', Param())], elt)
-      elt = call("concatMap", [lambdaFunction, ifexp])
+      elt = call("concatMap", lambdaFunction, ifexp)
     lambdaFunction = func([var], elt)
-    return call("concatMap", [lambdaFunction, m])
+    return call("concatMap", lambdaFunction, m)
   else:
     var = generators[0].target
     var = name(var.id, Param())
@@ -39,12 +39,12 @@ def transform(elt, generators):
     elt = transform(elt, generators[1:])
     for i in ifs[-1::-1]:
       ifexp = IfExp(i,
-                    call('singleton',[unit]),
-                    call('fail', []), lineno=0, col_offset=0)
+                    call('singleton', unit),
+                    call('fail'), lineno=0, col_offset=0)
       lambdaFunction = func([name('_', Param())], elt)
-      elt = call("concatMap", [lambdaFunction, ifexp])
+      elt = call("concatMap", lambdaFunction, ifexp)
     lambdaFunction = func([var], elt)
-    return call("concatMap", [lambdaFunction, m])
+    return call("concatMap", lambdaFunction, m)
 
 class RewriteComp(NodeTransformer):
   def visit_ListComp(self, node):
