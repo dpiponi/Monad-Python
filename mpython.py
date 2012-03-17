@@ -2,13 +2,11 @@
 
 from ast import *
 
-def nameLoad(x):
-  return Name(id=x, ctx = Load(), lineno=0, col_offset=0)
-def nameParam(x):
-  return Name(id=x, ctx = Param(), lineno=0, col_offset=0)
+def name(x, ctx):
+  return Name(id=x, ctx = ctx, lineno=0, col_offset=0)
 
 def call(f, args):
-  f = nameLoad(f)
+  f = name(f, Load())
   return Call(func = f, args=args, lineno=0, col_offset=0, keywords=[], vararg=None)
 
 def func(args, body):
@@ -17,7 +15,7 @@ def func(args, body):
 def transform(elt, generators):
   if len(generators) ==1:
     var = generators[0].target
-    var = Name(id = var.id, ctx=Param(),lineno=0,col_offset=0)
+    var = name(var.id, Param())
 
     m = generators[0].iter
     ifs = generators[0].ifs
@@ -26,13 +24,13 @@ def transform(elt, generators):
       ifexp = IfExp(i,
                     call('singleton',[Tuple(elts = [],lineno=0,col_offset=0,ctx=Load())]),
                     call('fail', []), lineno=0, col_offset=0)
-      lambdaFunction = func([nameParam('_')], elt)
+      lambdaFunction = func([name('_', Param())], elt)
       elt = call("concatMap", [lambdaFunction, ifexp])
     lambdaFunction = func([var], elt)
     return call("concatMap", [lambdaFunction, m])
   else:
     var = generators[0].target
-    var = Name(id = var.id, ctx=Param(),lineno=0,col_offset=0)
+    var = name(var.id, Param())
 
     m = generators[0].iter
     ifs = generators[0].ifs
@@ -41,7 +39,7 @@ def transform(elt, generators):
       ifexp = IfExp(i,
                     call('singleton',[Tuple(elts = [],lineno=0,col_offset=0,ctx=Load())]),
                     call('fail', []), lineno=0, col_offset=0)
-      lambdaFunction = func([nameParam('_')], elt)
+      lambdaFunction = func([name('_', Param())], elt)
       elt = call("concatMap", [lambdaFunction, ifexp])
     lambdaFunction = func([var], elt)
     return call("concatMap", [lambdaFunction, m])
