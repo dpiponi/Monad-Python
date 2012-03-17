@@ -12,6 +12,8 @@ def call(f, args):
 def func(args, body):
   return Lambda(args = arguments(args = args, defaults = []), body = body, vararg=None, lineno=0, col_offset=0)
 
+unit = Tuple(elts = [],lineno=0,col_offset=0,ctx=Load())
+
 def transform(elt, generators):
   if len(generators) ==1:
     var = generators[0].target
@@ -22,7 +24,7 @@ def transform(elt, generators):
     elt = call("singleton", [elt])
     for i in ifs[-1::-1]:
       ifexp = IfExp(i,
-                    call('singleton',[Tuple(elts = [],lineno=0,col_offset=0,ctx=Load())]),
+                    call('singleton',[unit]),
                     call('fail', []), lineno=0, col_offset=0)
       lambdaFunction = func([name('_', Param())], elt)
       elt = call("concatMap", [lambdaFunction, ifexp])
@@ -37,7 +39,7 @@ def transform(elt, generators):
     elt = transform(elt, generators[1:])
     for i in ifs[-1::-1]:
       ifexp = IfExp(i,
-                    call('singleton',[Tuple(elts = [],lineno=0,col_offset=0,ctx=Load())]),
+                    call('singleton',[unit]),
                     call('fail', []), lineno=0, col_offset=0)
       lambdaFunction = func([name('_', Param())], elt)
       elt = call("concatMap", [lambdaFunction, ifexp])
