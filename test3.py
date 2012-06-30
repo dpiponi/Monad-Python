@@ -132,3 +132,14 @@ for i in range(1, 16):
   print i, test5a
 test5b = 1-math.exp(-1)
 print "test5 =", math.fabs(test5a-test5b) < 1e-9
+
+# Maybe you recognise the 1-1/e above from this problem:
+# n people visit a restaurant (another one) and hang up their hats. When they leave
+# they pick a hat at random. What's the probability of anyone getting their original
+# hat back? The connection between that problem and the CRP is a beautiful bit
+# of mathematics about the permutation group. I'll leave it as a puzzle to figure
+# out why problems have the same solution.
+
+# PS I only realised this fact because I'd written code to compute this stuff to machine
+# precision and recognised 1-1/e. It's fortuitous that I chose this problem completely at
+# random and was led to see the connection. (I admit I got some help from the web...)
